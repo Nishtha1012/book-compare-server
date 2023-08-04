@@ -1,55 +1,45 @@
-const axios = require('axios')
+const axios = require("axios");
+const dotenv = require("dotenv");
+dotenv.config();
 
+const key = process.env.API_KEY;
+console.log(key);
 const resolvers = {
-    Query: {
-        searchBooks: async (parent, { term, start }) => {
-            console.log(start);
-            try {
-                const { data } = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${term}&startIndex=${start}&key=AIzaSyCQRbymDHOn41KEyY19un3WGOSiqXoomZk`)
+  Query: {
+    searchBooks: async (parent, { term, start, filter }) => {
+      console.log(term, start, filter);
+      try {
+        const { data } = await axios.get(
+          `https://www.googleapis.com/books/v1/volumes?q=${term}&startIndex=${start}${
+            filter ? `&filter=${filter}` : ""
+          }&key=${key}`
+        );
 
-                console.log(data.items);
-                return data.items
-            }
-            catch (error) {
-                console.log(error);
-                throw new Error('failed to search books')
-            }
-        },
-        bookByID: async (parent, { id }) => {
-            try {
-                const { data } = await axios.get(`https://www.googleapis.com/books/v1/volumes/${id}`)
-                console.log(data);
-                return data
-            }
-            catch (error) {
-                console.log(error);
-                throw new Error('failed to search books')
-            }
-        },
-        booksByFilter: async (parent, { term, filter, start }) => {
+        console.log(data.items);
+        return data.items;
+      } catch (error) {
+        console.log(error.message);
+        throw new Error("failed to search books");
+      }
+    },
+    bookByID: async (parent, { id }) => {
+      console.log(id);
+      try {
+        const result = id.map(async (ids) => {
+          const { data } = await axios.get(
+            `https://www.googleapis.com/books/v1/volumes/${ids}`
+          );
+          console.log(data, "data ======");
+          return data;
+        });
+        console.log(result, "result-----------------");
+        return result;
+      } catch (error) {
+        console.log(error);
+        throw new Error("failed to search books");
+      }
+    },
+  },
+};
 
-            try {
-                const { data } = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${term}&filter=${filter}&startIndex=${start}&key=AIzaSyCQRbymDHOn41KEyY19un3WGOSiqXoomZk`)
-                console.log("------------------>", data.items);
-                return data.items
-            }
-            catch (error) {
-                console.log(error);
-                throw new Error("failed to filter books")
-            }
-        },
-        booksByOrder: async (parent, { term, order, start }) => {
-            try {
-                const { data } = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${term}&orderBy=${order}&startIndex=${start}&key=AIzaSyCQRbymDHOn41KEyY19un3WGOSiqXoomZk`)
-                console.log(data.items);
-                return data.items
-            }
-            catch (error) {
-                console.log(error);
-                throw new Error("failed to sort books")
-            }
-        }
-    }
-}
-
-module.exports = { resolvers }
+module.exports = { resolvers };
