@@ -28,7 +28,7 @@ const resolvers = {
         const result = await Promise.all(
           id.map(async (ids) => {
             const { data } = await axios.get(
-              `https://www.googleapis.com/books/v1/volumes/${id}`
+              `https://www.googleapis.com/books/v1/volumes/${ids}`
             );
             console.log(data, "data ======");
             return data;
