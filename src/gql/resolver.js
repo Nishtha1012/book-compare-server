@@ -25,13 +25,15 @@ const resolvers = {
     bookByID: async (parent, { id }) => {
       console.log(id);
       try {
-        const result = id.map(async (ids) => {
-          const { data } = await axios.get(
-            `https://www.googleapis.com/books/v1/volumes/${ids}`
-          );
-          console.log(data, "data ======");
-          return data;
-        });
+        const result = await Promise.all(
+          id.map(async (ids) => {
+            const { data } = await axios.get(
+              `https://www.googleapis.com/books/v1/volumes/${id}`
+            );
+            console.log(data, "data ======");
+            return data;
+          })
+        );
         console.log(result, "result-----------------");
         return result;
       } catch (error) {
