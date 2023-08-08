@@ -38,7 +38,7 @@ const resolvers = {
         return result;
       } catch (error) {
         console.log(error);
-        throw new Error("failed to search books");
+        throw new Error(error);
       }
     },
   },
